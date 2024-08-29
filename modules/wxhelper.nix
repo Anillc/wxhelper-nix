@@ -31,8 +31,7 @@ in {
 
         export PATH=${lib.makeBinPath (with pkgs; [
           busybox xorg.xorgserver x11vnc
-          wineWowPackages.full
-          fish
+          wineWow64Packages.full
         ])}
 
         mkdir -p /etc
