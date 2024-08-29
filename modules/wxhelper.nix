@@ -32,6 +32,7 @@ in {
         export PATH=${lib.makeBinPath (with pkgs; [
           busybox xorg.xorgserver x11vnc
           wineWowPackages.full
+          fish
         ])}
 
         mkdir -p /etc
@@ -43,11 +44,6 @@ in {
         ln -s $(which env) /usr/bin/env
         ln -s $(which sh) /bin/sh
 
-        if [ ! -e /root/.wine ]; then
-          cp -r ${cfg.installation}/.wine /root/.wine
-          chmod +w -R /root/.wine
-        fi
-
         export DISPLAY=':${toString cfg.display}'
         createService xvfb 'Xvfb :${toString cfg.display}'
         createService x11vnc 'x11vnc ${lib.concatStringsSep " " [
@@ -58,7 +54,11 @@ in {
         createService wechat ${pkgs.writeScript "wechat" ''
           #!${pkgs.runtimeShell}
           set -e
-          wine /root/.wine/drive_c/Program\ Files/Tencent/WeChat/Wechat.exe &
+          WECHAT=/root/.wine/drive_c/Program\ Files/Tencent/WeChat/WeChat.exe
+          if [ ! -e "$WECHAT" ]; then
+            wine ${cfg.wechat-setup} /S
+          fi
+          wine "$WECHAT" &
           wine ${cfg.injector} ${cfg.wxhelper-dll} WeChat.exe
           wait
         ''}
