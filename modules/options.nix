@@ -1,5 +1,5 @@
 { config, pkgs, lib, ... }: {
-  options = {
+  options.wxhelper = {
     dns = lib.mkOption {
       type = lib.types.str;
       description = "dns server used in sandbox";

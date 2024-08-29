@@ -1,9 +1,11 @@
-{ config, pkgs, lib, ... }: {
-  options.wxhelper = lib.mkOption {
+{ config, pkgs, lib, ... }: let
+  cfg = config.wxhelper;
+in {
+  options.wxhelper.wxhelper = lib.mkOption {
     type = lib.types.path;
     description = "wxhelper";
   };
-  config.wxhelper = pkgs.writeScriptBin "wxhelper" ''
+  config.wxhelper.wxhelper = pkgs.writeScriptBin "wxhelper" ''
     #!${pkgs.runtimeShell}
     mkdir -p data
     ${pkgs.bubblewrap}/bin/bwrap \
@@ -37,27 +39,27 @@
         export HOME=/root
         echo "root:x:0:0::/root:${pkgs.runtimeShell}" > /etc/passwd
         echo "root:x:0:" > /etc/group
-        echo "nameserver ${config.dns}" > /etc/resolv.conf
+        echo "nameserver ${cfg.dns}" > /etc/resolv.conf
         ln -s $(which env) /usr/bin/env
         ln -s $(which sh) /bin/sh
 
         if [ ! -e /root/.wine ]; then
-          cp -r ${config.installation}/.wine /root/.wine
+          cp -r ${cfg.installation}/.wine /root/.wine
           chmod +w -R /root/.wine
         fi
 
-        export DISPLAY=':${toString config.display}'
-        createService xvfb 'Xvfb :${toString config.display}'
+        export DISPLAY=':${toString cfg.display}'
+        createService xvfb 'Xvfb :${toString cfg.display}'
         createService x11vnc 'x11vnc ${lib.concatStringsSep " " [
-          "-forever" "-display :${toString config.display}"
-          "-rfbport ${toString config.port}"
-          (lib.optionalString (config.password != null) "-passwd ${config.password}")
+          "-forever" "-display :${toString cfg.display}"
+          "-rfbport ${toString cfg.port}"
+          (lib.optionalString (cfg.password != null) "-passwd ${cfg.password}")
         ]}'
         createService wechat ${pkgs.writeScript "wechat" ''
           #!${pkgs.runtimeShell}
           set -e
           wine /root/.wine/drive_c/Program\ Files/Tencent/WeChat/Wechat.exe &
-          wine ${config.injector} ${config.wxhelper-dll} WeChat.exe
+          wine ${cfg.injector} ${cfg.wxhelper-dll} WeChat.exe
           wait
         ''}
         runsvdir /services

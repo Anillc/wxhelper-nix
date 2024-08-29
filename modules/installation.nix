@@ -1,9 +1,11 @@
-{ config, pkgs, lib, ... }: {
-  options.installation = lib.mkOption {
+{ config, pkgs, lib, ... }: let
+  cfg = config.wxhelper;
+in {
+  options.wxhelper.installation = lib.mkOption {
     type = lib.types.path;
     description = "wechat installtion";
   };
-  config.installation = pkgs.runCommand "installtion" {} ''
+  config.wxhelper.installation = pkgs.runCommand "installtion" {} ''
     function key() {
       ${pkgs.xdotool}/bin/xdotool key $1
       sleep 0.5
@@ -11,7 +13,7 @@
     mkdir -p $out
     ${pkgs.xorg.xorgserver}/bin/Xvfb :1 &
     export DISPLAY=:1
-    USER=root WINEPREFIX=$out/.wine ${pkgs.wineWowPackages.full}/bin/wine ${config.wechat-setup} &
+    USER=root WINEPREFIX=$out/.wine ${pkgs.wineWowPackages.full}/bin/wine ${cfg.wechat-setup} &
     while :; do
       sleep 5
       if ${pkgs.xdotool}/bin/xdotool search 'Wechat Setup'; then

@@ -1,5 +1,5 @@
 { config, pkgs, lib, ... }: {
-  options = {
+  options.wxhelper = {
     wechat-setup = lib.mkOption {
       type = lib.types.path;
       description = "wechat setup";
@@ -13,7 +13,7 @@
       description = "wxhelper";
     };
   };
-  config = {
+  config.wxhelper = {
     wechat-setup = pkgs.fetchurl {
       name = "wechat-setup.exe";
       url = "https://github.com/tom-snow/wechat-windows-versions/releases/download/v3.9.10.19/WeChatSetup-3.9.10.19.exe";
