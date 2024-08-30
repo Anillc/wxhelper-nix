@@ -58,7 +58,8 @@ in {
             wine ${cfg.wechat-setup} /S
           fi
           wine "$WECHAT" &
-          wine ${cfg.injector} ${cfg.wxhelper-dll} WeChat.exe
+          PID=$(wine tasklist | grep 'WeChat.exe' | awk '{ print $2 }')
+          wine ${cfg.injector} -I $PID -p ${cfg.wxhelper-dll}
           wait
         ''}
         runsvdir /services
